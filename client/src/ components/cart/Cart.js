@@ -1,14 +1,17 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Divider } from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
+import { LoginContext } from "../context/ContextProvider";
 
-import { useParams } from "react-router-dom";
 import "./cart.css";
 
 function Cart() {
   const { id } = useParams("");
+  const history = useNavigate("");
   console.log(id, `id`);
+  const { account, setAccount } = useContext(LoginContext);
   const [indData, setIndData] = useState([]);
 
   console.log(indData, `ind-data`);
@@ -32,6 +35,32 @@ function Cart() {
     getIndData();
   }, [id]);
 
+  // add cart
+
+  const addToCart = async id => {
+    const checkRes = await fetch(`/addToCart/${id}`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ indData }),
+      credentials: "include",
+    });
+
+    const data1 = await checkRes.json();
+    console.log(data1, `frontend --data`);
+
+    if (checkRes.status === 401 || !data1) {
+      console.log(`user invalid`);
+      alert(`user invalid`);
+    } else {
+      // alert(`data added in cart`);
+      setAccount(data1);
+      history("/buyNow");
+    }
+  };
+
   return (
     <div className="cart_section">
       {indData && Object.keys(indData).length && (
@@ -39,7 +68,14 @@ function Cart() {
           <div className="left_cart">
             <img src={indData.detailUrl} alt="cart_img" />
             <div className="cart_btn">
-              <button className="cart_btn1">Add to cart</button>
+              <button
+                className="cart_btn1"
+                onClick={() => {
+                  addToCart(indData.id);
+                }}
+              >
+                Add to cart
+              </button>
               <button className="cart_btn2">Buy Now</button>
             </div>
           </div>

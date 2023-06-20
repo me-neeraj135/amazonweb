@@ -2,7 +2,28 @@
 
 import React from "react";
 
-function Option() {
+function Option({ deleteData, get }) {
+  const removeItem = async (req, res) => {
+    try {
+      const res = await fetch("/removeItem", {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      const deletedItem = await res.json();
+
+      console.log(deletedItem, `item-delete`);
+      if (res.status === 400 || !deletedItem) {
+        console.log(`item not remove`);
+      } else {
+        console.log(`item remove`);
+      }
+    } catch (error) {}
+  };
   return (
     <div className="add_remove_select">
       <select>

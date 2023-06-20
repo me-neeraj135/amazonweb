@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import "../navbar.css";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -8,7 +8,35 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
 import { NavLink } from "react-router-dom";
+import { LoginContext } from "../../context/ContextProvider";
+
 const Navbar = () => {
+  const { account, setAccount } = useContext(LoginContext);
+
+  const getValidUser = async () => {
+    const res = await fetch("/validateUser", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+
+    const data = await res.json();
+    console.log(data, `valid-u`);
+    if (res.status !== 201) {
+      console.log(`error`);
+    } else {
+      setAccount(data);
+    }
+  };
+
+  useEffect(() => {
+    getValidUser();
+  }, []);
+
+  console.log(account, `--account`);
   return (
     <header>
       <nav>
@@ -30,12 +58,27 @@ const Navbar = () => {
             <NavLink to="/login">signIn</NavLink>
           </div>
           <div className="cart_btn">
-            <Badge badgeContent={4} color="primary">
-              <ShoppingCartIcon id="icon" />
-            </Badge>
+            {account ? (
+              <NavLink to="/buyNow">
+                <Badge badgeContent={account.carts.length} color="primary">
+                  <ShoppingCartIcon id="icon" />
+                </Badge>
+              </NavLink>
+            ) : (
+              <NavLink to="/login">
+                <Badge badgeContent={0} color="primary">
+                  <ShoppingCartIcon id="icon" />
+                </Badge>
+              </NavLink>
+            )}
+
             <p>cart</p>
           </div>
-          <Avatar className="avatar" />
+          {account ? (
+            <Avatar className="avtar2">{account.fname[0].toUpperCase()}</Avatar>
+          ) : (
+            <Avatar className="avatar"></Avatar>
+          )}
         </div>
       </nav>
     </header>

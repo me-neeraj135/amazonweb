@@ -22,7 +22,7 @@ function App() {
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<SignUp />} />
         <Route path="/getProductsOne/:id" element={<Cart />} />
-        <Route path="/buynow" element={<BuyNow />} />
+        <Route path="/buyNow" element={<BuyNow />} />
       </Routes>
 
       <Footer />

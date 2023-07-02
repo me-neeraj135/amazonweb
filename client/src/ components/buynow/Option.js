@@ -1,11 +1,17 @@
 /** @format */
 
-import React from "react";
+import React, { useContext } from "react";
+
+import { LoginContext } from "../context/ContextProvider";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Option({ deleteData, get }) {
+  const { account, setAccount } = useContext(LoginContext);
+
   const removeItem = async (req, res) => {
     try {
-      const res = await fetch("/removeItem", {
+      const res = await fetch(`/removeItem/${deleteData}`, {
         method: "DELETE",
         headers: {
           Accept: "application/json",
@@ -14,15 +20,28 @@ function Option({ deleteData, get }) {
         credentials: "include",
       });
 
-      const deletedItem = await res.json();
+      const data = await res.json();
 
-      console.log(deletedItem, `item-delete`);
-      if (res.status === 400 || !deletedItem) {
+      console.log(data, `item-delete`);
+      if (res.status === 400 || !data) {
         console.log(`item not remove`);
       } else {
         console.log(`item remove`);
+        setAccount(data);
+        toast.success("Item removed", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        get();
       }
     } catch (error) {}
+    console.log("error");
   };
   return (
     <div className="add_remove_select">
@@ -32,9 +51,13 @@ function Option({ deleteData, get }) {
         <option value="3">3</option>
         <option value="4">4</option>
       </select>
-      <p style={{ cursor: "pointer" }}>Delete</p> <span>|</span>
+      <p style={{ cursor: "pointer" }} onClick={removeItem}>
+        Delete
+      </p>{" "}
+      <span>|</span>
       <p className="forremovemedia">Save or Later</p> <span>|</span>
       <p className="forremovemedia">See more like this</p>
+      <ToastContainer />
     </div>
   );
 }

@@ -164,4 +164,22 @@ router.delete("/removeItem/:id", authenticate, async (req, res) => {
     res.status(400).json(req.rootUser);
   }
 });
+
+// logout User
+
+router.get("/logout", authenticate, async (req, res) => {
+  try {
+    req.rootUser.tokens = req.rootUser.tokens.filter(cv => {
+      return cv.token !== req.token;
+    });
+    res.clearCookie("Amazonweb", { path: "/" });
+
+    req.rootUser.save();
+    res.status(201).json(req.rootUser.tokens);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(req.rootUser.tokens);
+  }
+});
+
 module.exports = router;

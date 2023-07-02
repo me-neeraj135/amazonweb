@@ -10,6 +10,7 @@ const authenticate = async (req, res, next) => {
     const verifyToken = jwt.verify(token, secreteKey);
 
     console.log(verifyToken, `verifyToken---`);
+
     const rootUser = await USER.findOne({
       _id: verifyToken._id,
       "tokens.token": token,

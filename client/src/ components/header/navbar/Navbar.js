@@ -1,27 +1,34 @@
 /** @format */
 
 import React, { useContext, useEffect, useState } from "react";
+
+import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import "react-toastify/dist/ReactToastify.css";
 import "../navbar.css";
-import SearchIcon from "@mui/icons-material/Search";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 import Badge from "@mui/material/Badge";
+import SearchIcon from "@mui/icons-material/Search";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Avatar from "@mui/material/Avatar";
-import { NavLink } from "react-router-dom";
-import { LoginContext } from "../../context/ContextProvider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Drawer from "@mui/material/Drawer";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import LogoutIcon from "@mui/icons-material/Logout";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+
 import RightHeader from "../RightHeader";
-import { useHistory } from "react-router-dom";
+import { LoginContext } from "../../context/ContextProvider";
 
 const Navbar = () => {
   const { account, setAccount } = useContext(LoginContext);
 
-  const history = useHistory();
+  const history = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -33,6 +40,14 @@ const Navbar = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const [text, setText] = useState("");
+  console.log(text, `search-text`);
+
+  const [listOpen, setListOpen] = useState(true);
+  const { products } = useSelector(state => state.getProductData);
+
+  // console.log(products, `ppppp`);
 
   const [drOpen, setDrOpen] = useState(false);
 
@@ -62,6 +77,8 @@ const Navbar = () => {
     setDrOpen(false);
   };
 
+  // user-logout
+
   const logoutUser = async () => {
     const res2 = await fetch("/logout", {
       method: "GET",
@@ -78,10 +95,24 @@ const Navbar = () => {
     if (res2.status !== 201) {
       console.log(`error`);
     } else {
-      alert(`logout`);
+      toast.success("user successfully logout", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
       setAccount(false);
-      history.push("/");
+      history("/");
     }
+  };
+
+  const getText = items => {
+    setText(items);
+    setListOpen(false);
   };
 
   useEffect(() => {
@@ -97,7 +128,7 @@ const Navbar = () => {
             <MenuIcon style={{ color: `#fff` }} />
           </IconButton>
           <Drawer open={drOpen} onClose={DrawerClose}>
-            <RightHeader logClose={DrawerClose} />
+            <RightHeader logClose={DrawerClose} logoutUser={logoutUser} />
           </Drawer>
           <div className="navlogo">
             <NavLink to="/">
@@ -105,10 +136,44 @@ const Navbar = () => {
             </NavLink>
           </div>
           <div className="nav_searchbar">
-            <input type="text" name="" id="" />
+            <input
+              onChange={e => {
+                getText(e.target.value);
+              }}
+              type="text"
+              name=""
+              id=""
+              placeholder="search your products"
+            />
             <div className="search_icon">
               <SearchIcon id="search" />
             </div>
+            {/* search products */}
+
+            {text && (
+              <List className="extrasearch " hidden={listOpen}>
+                {products
+                  .filter(product =>
+                    product.title.longTitle
+                      .toLowerCase()
+                      .includes(text.toLowerCase())
+                  )
+                  .map(product => {
+                    return (
+                      <ListItem>
+                        <NavLink
+                          to={`/getProductsOne/${product.id}`}
+                          onClick={() => {
+                            setListOpen(true);
+                          }}
+                        >
+                          {product.title.longTitle}
+                        </NavLink>
+                      </ListItem>
+                    );
+                  })}
+              </List>
+            )}
           </div>
         </div>
         <div className="right">
@@ -174,6 +239,7 @@ const Navbar = () => {
               ""
             )}
           </Menu>
+          <ToastContainer />
         </div>
       </nav>
     </header>

@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Divider } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import { LoginContext } from "../context/ContextProvider";
-
+import CircularProgress from "@mui/material/CircularProgress";
 import "./cart.css";
 
 function Cart() {
@@ -12,7 +12,7 @@ function Cart() {
   const history = useNavigate("");
   console.log(id, `id`);
   const { account, setAccount } = useContext(LoginContext);
-  const [indData, setIndData] = useState([]);
+  const [indData, setIndData] = useState("");
 
   console.log(indData, `ind-data`);
   const getIndData = async () => {
@@ -32,7 +32,7 @@ function Cart() {
   };
 
   useEffect(() => {
-    getIndData();
+    setTimeout(getIndData, 1000);
   }, [id]);
 
   // add cart
@@ -125,6 +125,14 @@ function Cart() {
             </p>
           </div>
         </div>
+      )}
+      {!indData ? (
+        <div className="circle">
+          <CircularProgress />
+          <h2>Loading...</h2>
+        </div>
+      ) : (
+        ""
       )}
     </div>
   );

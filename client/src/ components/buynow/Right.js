@@ -1,9 +1,13 @@
 /** @format */
 
 import React, { useState, useEffect } from "react";
-
+import { useNavigate } from "react-router-dom";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 const Right = ({ item }) => {
+  const [val, setVal] = useState(false);
   const [price, setPrice] = useState(0);
+  const history = useNavigate();
 
   useEffect(() => {
     totalAmount();
@@ -13,9 +17,13 @@ const Right = ({ item }) => {
     let price = 0;
 
     item.map(item => {
-      price += item.price.cost;
+      return (price += item.price.cost);
     });
     setPrice(price);
+  };
+  const proceesby = () => {
+    alert("Your Order is Confirmed");
+    history("/");
   };
   return (
     <div className="right_buy">
@@ -23,7 +31,7 @@ const Right = ({ item }) => {
         src="https://images-eu.ssl-images-amazon.com/images/G/31/checkout/assets/TM_desktop._CB443006202_.png"
         alt="rightimg"
       />
-      {/* <div className="cost_right">
+      <div className="cost_right">
         <p>
           Your order is eligible for FREE Delivery. <br />
           <span style={{ color: "#565959" }}>
@@ -48,7 +56,7 @@ const Right = ({ item }) => {
           purchase of Gold, Jewelry, Gift cards and Amazon pay balance top up).
           Learn more
         </span>
-      </div> */}
+      </div>
     </div>
   );
 };

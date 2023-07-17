@@ -9,7 +9,7 @@ import Right from "./Right";
 
 function BuyNow() {
   const [cartData, setCartData] = useState("");
-  console.log(cartData.carts, `cart-data`);
+  // console.log(cartData.carts, `cart-data`);
   const getBuyData = async () => {
     const res = await fetch("/cartDetails", {
       method: "GET",

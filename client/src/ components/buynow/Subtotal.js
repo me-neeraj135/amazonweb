@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 
 function Subtotal({ item }) {
+  console.log(item, `subtotal`);
   const [price, setPrice] = useState(0);
 
   useEffect(() => {
@@ -13,7 +14,7 @@ function Subtotal({ item }) {
     let price = 0;
 
     item.map(item => {
-      price += item.price.cost;
+      return (price += item.price.cost);
     });
     setPrice(price);
   };
